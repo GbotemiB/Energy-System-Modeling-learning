@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Solver / model artefacts
+*.lp
+*.mps
+*.sol
+*.ilp
+*.nc
+*.h5
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
