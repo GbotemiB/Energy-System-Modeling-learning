@@ -1,0 +1,76 @@
+import os
+
+CO2_CONSTRAINTS = [150, 100, 50, 25, 0]
+
+rule get_data:
+    output:
+        "data/costs_2030.csv",
+        "data/time-series-lecture-2.csv"
+    shell: "python scripts/get_data.py"
+
+rule get_costs:
+    input: "data/costs_2030.csv",
+    output: "data/costs.csv",
+    script: "scripts/get_costs.py"
+
+rule get_timeseries:
+    input: "data/time-series-lecture-2.csv"
+    output: "data/timeseries.csv"
+    # Using script, the Python module is imported into the same
+    # namespace as Snakemake see https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#external-scripts
+    script: "scripts/get_timeseries.py"
+
+rule build_model:
+    input:
+        ts=rules.get_timeseries.output,
+        costs=rules.get_costs.output
+    output:
+        "results/cem.nc"
+    script: "scripts/build_model.py"
+
+# rule add_constraint:
+#     input:
+#         rules.build_model.output
+#     output:
+#         "results/cem_{CO2}.nc"
+#     # ``run:`` places the code directly into the Snakefile.  Careful!
+#     run:
+#         import pypsa
+#         network = pypsa.Network(str(input[0]))
+#         network.global_constraints.loc["CO2Limit", "constant"] = float(wildcards.CO2) * 1e6
+#         network.export_to_netcdf(str(output[0]))
+
+rule sensitivity:
+    input:
+        rules.build_model.output
+    output:
+        "results/sensitivity_{CO2}.nc"
+    script: "scripts/sensitivity.py"
+
+
+rule solve:
+    input:
+        rules.sensitivity.output
+    output:
+        "results/solved_cem_{CO2}.nc"
+    script: "scripts/solve.py"
+
+rule aggregation:
+    input: expand("results/solved_cem_{CO2}.nc", CO2=CO2_CONSTRAINTS)
+    params: co2=CO2_CONSTRAINTS
+    output:
+        stats="results/aggregation.csv",
+        plot="results/aggregation.png"
+    script: "scripts/aggregate.py"
+
+rule plot:
+    input: rules.solve.output
+    output: "results/figure_{CO2}.png"
+    shell: "python scripts/plot.py {input} {output}"
+
+rule all:
+    input: 
+        plots = expand("results/figure_{CO2}.png", CO2=CO2_CONSTRAINTS),
+        stats = rules.aggregation.output.stats,
+        sensitivity_plot = rules.aggregation.output.plot
+
