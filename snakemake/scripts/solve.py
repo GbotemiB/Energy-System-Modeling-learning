@@ -1,6 +1,6 @@
 import pypsa
 import os
-
+from typing import TYPE_CHECKING
 
 def main(network: pypsa.Network) -> pypsa.Network:
     """Solve the network"""
@@ -10,7 +10,8 @@ def main(network: pypsa.Network) -> pypsa.Network:
 
 
 if __name__ == "__main__":
-
+    if TYPE_CHECKING:
+        from snakemake.script import snakemake
 
     network_path = str(snakemake.input)
     solved_network_path = str(snakemake.output)

@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import pypsa
+from typing import TYPE_CHECKING
 
 
 def aggregate_results(n):
@@ -32,6 +33,9 @@ def plot_sensitivity(df, colors=None):
 
 
 if __name__ == "__main__":
+    if TYPE_CHECKING:
+            from snakemake.script import snakemake
+            
     sensitivity_results = {}
 
     for path, co2 in zip(snakemake.input, snakemake.params["co2"]):

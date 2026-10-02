@@ -15,6 +15,7 @@ to start with Germany only. You can adapt the code to other countries as an exer
 import os
 import pypsa
 import pandas as pd
+from typing import TYPE_CHECKING
 
 # %%
 pypsa.options.params.optimize.include_objective_constant = True
@@ -174,6 +175,8 @@ def main(
 
 
 if __name__ == "__main__":
+    if TYPE_CHECKING:
+            from snakemake.script import snakemake
 
     cost_data_path = snakemake.input[1]
     cost_data = pd.read_csv(cost_data_path, index_col=[0])

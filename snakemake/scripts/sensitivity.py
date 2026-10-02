@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import pypsa
-
+from typing import TYPE_CHECKING
 
 def add_sensitvity_to_network(n, co2):
     """
@@ -11,6 +11,8 @@ def add_sensitvity_to_network(n, co2):
     return n
 
 if __name__ == "__main__":
+    if TYPE_CHECKING:
+            from snakemake.script import snakemake
 
     n = pypsa.Network(snakemake.input[0])
     n = add_sensitvity_to_network(n, float(snakemake.wildcards["CO2"]))

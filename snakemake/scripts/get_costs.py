@@ -8,7 +8,7 @@ and thus can be added to the annuity factor when calculating the annualised capi
 
 import os
 import pandas as pd
-
+from typing import TYPE_CHECKING
 from pypsa.costs import annuity
 
 
@@ -42,6 +42,8 @@ def main(input_data: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    if TYPE_CHECKING:
+            from snakemake.script import snakemake
 
     input_path = snakemake.input[0]
     output_path = snakemake.output[0]
