@@ -74,3 +74,6 @@ rule all:
         stats = rules.aggregation.output.stats,
         sensitivity_plot = rules.aggregation.output.plot
 
+
+rule clean:
+    shell: "rm -rf results/*"
